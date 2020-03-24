@@ -7,22 +7,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using XUnitTest.WEB.Data;
 using XUnitTest.WEB.Models;
+using XUnitTest.WEB.Repository;
 
 namespace XUnitTest.WEB.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepository<Product> repository;
 
-        public ProductsController(ApplicationDbContext context)
+        public ProductsController(IRepository<Product> repository)
         {
-            _context = context;
+            this.repository = repository;
         }
 
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Products.ToListAsync());
+            return View(await repository.GetEntities());
         }
 
         // GET: Products/Details/5
@@ -33,8 +34,7 @@ namespace XUnitTest.WEB.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = await repository.GetEntity(id.Value);
             if (product == null)
             {
                 return NotFound();
@@ -58,8 +58,7 @@ namespace XUnitTest.WEB.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(product);
-                await _context.SaveChangesAsync();
+                await repository.Create(product);
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -73,7 +72,7 @@ namespace XUnitTest.WEB.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
+            var product = await repository.GetEntity(id.Value);
             if (product == null)
             {
                 return NotFound();
@@ -86,7 +85,7 @@ namespace XUnitTest.WEB.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,Stock")] Product product)
+        public IActionResult Edit(int id, [Bind("Id,Name,Price,Stock")] Product product)
         {
             if (id != product.Id)
             {
@@ -97,8 +96,7 @@ namespace XUnitTest.WEB.Controllers
             {
                 try
                 {
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
+                    repository.Update(product);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -124,8 +122,7 @@ namespace XUnitTest.WEB.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = await repository.GetEntity(id.Value);
             if (product == null)
             {
                 return NotFound();
@@ -139,15 +136,14 @@ namespace XUnitTest.WEB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
+            var product = await repository.GetEntity(id);
+            repository.Delete(product);
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProductExists(int id)
         {
-            return _context.Products.Any(e => e.Id == id);
+            return repository.GetEntity(id).Result != null;
         }
     }
 }

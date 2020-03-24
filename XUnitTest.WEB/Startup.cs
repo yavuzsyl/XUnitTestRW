@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using XUnitTest.WEB.Data;
+using XUnitTest.WEB.Repository;
 
 namespace XUnitTest.WEB
 {
@@ -25,6 +26,9 @@ namespace XUnitTest.WEB
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
             services.AddDbContextPool<ApplicationDbContext>(opt =>
             {
                 opt.UseSqlServer(Configuration.GetConnectionString("TestCon"));
