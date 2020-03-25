@@ -29,17 +29,18 @@ namespace XUnitTest.WEB.Controllers
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            //1
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
-
+            //2
             var product = await repository.GetEntity(id.Value);
             if (product == null)
             {
                 return NotFound();
             }
-
+            //3
             return View(product);
         }
 
