@@ -45,8 +45,9 @@ namespace XUnitTest.WEB.Controllers
         }
 
         // GET: Products/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            //1
             return View();
         }
 
@@ -57,27 +58,32 @@ namespace XUnitTest.WEB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Price,Stock")] Product product)
         {
+            //1
             if (ModelState.IsValid)
-            {
+            {   
+                //mock
+                //2 bunun çalışması burada kontrol edilmediği için yapılmayabilir kanımca 
                 await repository.Create(product);
                 return RedirectToAction(nameof(Index));
             }
+            //3
             return View(product);
         }
 
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            //1
             if (id == null)
-            {
-                return NotFound();
-            }
+                return RedirectToAction(nameof(Index));
 
+            //mock//2
             var product = await repository.GetEntity(id.Value);
             if (product == null)
             {
                 return NotFound();
             }
+            //3
             return View(product);
         }
 
