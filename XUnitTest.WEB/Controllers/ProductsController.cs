@@ -60,7 +60,7 @@ namespace XUnitTest.WEB.Controllers
         {
             //1
             if (ModelState.IsValid)
-            {   
+            {
                 //mock
                 //2 bunun çalışması burada kontrol edilmediği için yapılmayabilir kanımca 
                 await repository.Create(product);
@@ -94,23 +94,22 @@ namespace XUnitTest.WEB.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, [Bind("Id,Name,Price,Stock")] Product product)
         {
+            //1
             if (id != product.Id)
-            {
                 return NotFound();
-            }
-
+            //2
             if (ModelState.IsValid)
             {
                 try
                 {
                     repository.Update(product);
-                }
+                }//3
                 catch (DbUpdateConcurrencyException)
-                {
+                {   //4
                     if (!ProductExists(product.Id))
                     {
                         return NotFound();
-                    }
+                    }//5
                     else
                     {
                         throw;
@@ -148,7 +147,7 @@ namespace XUnitTest.WEB.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProductExists(int id)
+        public bool ProductExists(int id)
         {
             return repository.GetEntity(id).Result != null;
         }
