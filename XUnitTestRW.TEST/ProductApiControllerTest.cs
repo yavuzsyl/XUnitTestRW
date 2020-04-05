@@ -138,7 +138,7 @@ namespace XUnitTestRW.TEST
         }
         [Theory]
         [InlineData(3)]
-        public async void Should_DeleteProduct_Returns_Returns_500_CouldntDelete(int id)
+        public async void Should_DeleteProduct_Returns_500_IfCouldntDelete(int id)
         {
             var product = products.FirstOrDefault(x=> x.Id == id);
             mockRepo.Setup(x => x.GetEntity(id)).Returns(Task.FromResult<Product>(product));
@@ -151,7 +151,7 @@ namespace XUnitTestRW.TEST
         }  
         [Theory]
         [InlineData(4)]
-        public async void Should_DeleteProduct_Returns_ReturnsOk(int id)
+        public async void Should_DeleteProduct_ReturnsOk(int id)
         {
             var product = products.FirstOrDefault(x=> x.Id == id);
             mockRepo.Setup(x => x.GetEntity(id)).Returns(Task.FromResult<Product>(product));
