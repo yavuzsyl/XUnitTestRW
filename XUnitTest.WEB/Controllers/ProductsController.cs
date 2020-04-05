@@ -104,16 +104,11 @@ namespace XUnitTest.WEB.Controllers
                 {
                     repository.Update(product);
                 }//3
-                catch (DbUpdateConcurrencyException)
-                {   //4
-                    if (!ProductExists(product.Id))
-                    {
-                        return NotFound();
-                    }//5
-                    else
-                    {
-                        throw;
-                    }
+                catch (DbUpdateConcurrencyException ex)
+                {
+
+                    throw new DbUpdateConcurrencyException();
+
                 }
                 return RedirectToAction(nameof(Index));
             }

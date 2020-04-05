@@ -9,8 +9,8 @@ namespace XUnitTest.WEB.Repository
     {
         Task<IEnumerable<TEntity>> GetEntities();
         Task<TEntity> GetEntity(int id);
-        Task Create(TEntity entity);
-        void Update(TEntity entity);
-        void Delete(TEntity entity);
+        Task<bool> Create(TEntity entity);
+        bool Update(TEntity entity);
+        bool Delete(TEntity entity);
     }
 }

@@ -193,9 +193,8 @@ namespace XUnitTestRW.TEST
         [InlineData(2)]
         public void Should_PostEditAction_ThrowsExceptionOnRepoUpdateMethod(int id)
         {
-            _mockRepo.Setup(repo => repo.Update(products.FirstOrDefault(x => x.Id == id))).Throws<DbUpdateConcurrencyException>();
-            var exception = Assert.Throws<DbUpdateConcurrencyException>(() => controller.Edit(id, products.FirstOrDefault(x => x.Id == id)));
-            Assert.IsType<DbUpdateConcurrencyException>(exception);
+            _mockRepo.Setup(repo => repo.Update(It.IsAny<Product>())).Throws<DbUpdateConcurrencyException>();
+            Assert.Throws<DbUpdateConcurrencyException>(() => controller.Edit(id, products.FirstOrDefault(x => x.Id == id)));
         }
 
         /// <summary>

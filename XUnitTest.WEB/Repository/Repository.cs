@@ -18,30 +18,30 @@ namespace XUnitTest.WEB.Repository
 
         }
 
-        public async Task Create(TEntity entity)
+        public async Task<bool> Create(TEntity entity)
         {
             await dbSet.AddAsync(entity);
-            await context.SaveChangesAsync();
+           return await context.SaveChangesAsync() > 0;
         }
 
-        public void Delete(TEntity entity)
+        public bool Delete(TEntity entity)
         {
             dbSet.Remove(entity);
-            context.SaveChanges();
+            return context.SaveChanges() > 0;
         }
 
         public async Task<IEnumerable<TEntity>> GetEntities() => await dbSet.ToListAsync();
-       
+
         public async Task<TEntity> GetEntity(int id) => await dbSet.FindAsync(id);
 
 
-        public void Update(TEntity entity)
+        public bool Update(TEntity entity)
         {
             context.Entry<TEntity>(entity).State = EntityState.Modified;
             //modified ile entity komple güncellenir
             //update ile sadece değişen alan güncellenir
             //dbSet.Update(entity);
-            context.SaveChanges();
+            return context.SaveChanges() > 0;
         }
     }
 }
