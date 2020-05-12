@@ -62,8 +62,11 @@ namespace XUnitTestRW.TEST
         [InlineData(4)]
         public async void Should_DetailsAction_ReturnsNotFound_If_IdDoesNotExists(int productId)
         {
+            //arrange
             _mockRepo.Setup(x => x.GetEntity(productId)).Returns(Task.FromResult<Product>(null));
+            //act
             var result = await controller.Details(productId);
+           //assert
             var redirect = Assert.IsType<NotFoundResult>(result);
             Assert.Equal(404, redirect.StatusCode);
 
@@ -74,10 +77,11 @@ namespace XUnitTestRW.TEST
         public async void Should_DetailsAction_Returns_Product_If_IdExist(int productId)
         {
             _mockRepo.Setup(x => x.GetEntity(productId)).Returns(Task.FromResult(products.FirstOrDefault(x => x.Id == productId)));
+            
             var result = await controller.Details(4);
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var resultProduct = Assert.IsType<Product>(viewResult.Model);
-
             Assert.Equal(productId, resultProduct.Id);
 
         }
@@ -95,7 +99,9 @@ namespace XUnitTestRW.TEST
         public async void Should_PostCreateAction_ReturnsCreateView_IF_ModelStateNotValid()
         {
             controller.ModelState.AddModelError("Name", "Name is required");
+
             var result = await controller.Create(products.FirstOrDefault());
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.IsType<Product>(viewResult.Model);
 
@@ -105,7 +111,9 @@ namespace XUnitTestRW.TEST
         {
             //bu mock olmasada olur
             _mockRepo.Setup(x => x.Create(products.FirstOrDefault()));
+
             var result = await controller.Create(products.FirstOrDefault());
+            
             var viewResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal(nameof(Index), viewResult.ActionName);
         }
@@ -117,7 +125,7 @@ namespace XUnitTestRW.TEST
             _mockRepo.Setup(repo => repo.Create(It.IsAny<Product>())).Callback<Product>(p => product = p);
             //callback ile belirtilen method simule edildiði zaman alacaðý paramatre product deðiþkenimize eþitlenecek
 
-            //product deðiþkenine listedeki ilke obje eþitlenecek
+            //product deðiþkenine listedeki ilk obje eþitlenecek
             var result = await controller.Create(products.FirstOrDefault());
 
             _mockRepo.Verify(repo => repo.Create(It.IsAny<Product>()), Times.Once);
@@ -125,11 +133,13 @@ namespace XUnitTestRW.TEST
 
             Assert.Equal(products.FirstOrDefault().Id, product.Id);
         }
-        [Fact]//so unnecessary shit
+        [Fact]//so unnecessary
         public async void Should_PostCreateAction_CreateMethodDoesNotExecute_IF_ModelStateInValid()
         {
             controller.ModelState.AddModelError("Name", "");
+
             var result = await controller.Create();
+            
             _mockRepo.Verify(repo => repo.Create(It.IsAny<Product>()), times: Times.Never);
         }
         #endregion
@@ -147,7 +157,9 @@ namespace XUnitTestRW.TEST
         public async void Should_GetEditAction_Returns_NotFound_IF_idIsNotExist(int? id)
         {
             _mockRepo.Setup(repo => repo.GetEntity(id.Value)).Returns(Task.FromResult<Product>(null));
+         
             var result = await controller.Edit(id);
+            
             Assert.IsType<NotFoundResult>(result);
             //Assert.Equal(404,((NotFoundResult)result).StatusCode);
         }
@@ -156,7 +168,9 @@ namespace XUnitTestRW.TEST
         public async void Should_GetEditAction_Returns_ViewWithProduct_IF_idIsExist(int? id)
         {
             _mockRepo.Setup(repo => repo.GetEntity(id.Value)).Returns(Task.FromResult<Product>(products.FirstOrDefault(x => x.Id == id.Value)));
+
             var result = await controller.Edit(id);
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var product = Assert.IsAssignableFrom<Product>(viewResult.Model);
             Assert.Equal(id.Value, product.Id);
@@ -207,11 +221,13 @@ namespace XUnitTestRW.TEST
         {
             var product = products.FirstOrDefault(x => x.Id == id);
             _mockRepo.Setup(repo => repo.Update(product));
+
             controller.Edit(id, product);
+            
             _mockRepo.Verify(repo => repo.Update(product), Times.Once);
 
         }
-        //edit metodu exception çözülünce devam edilecek
+        //edit metodu exception çözülünce devam edilecek --up > done
         #endregion
 
         #region Delete
@@ -228,6 +244,7 @@ namespace XUnitTestRW.TEST
         public async void Should_DeleteAction_ReturnsNotFound_If_IdDoesNotExists(int productId)
         {
             _mockRepo.Setup(x => x.GetEntity(productId)).Returns(Task.FromResult<Product>(null));
+
             var result = await controller.Delete(productId);
             Assert.IsType<NotFoundResult>(result);
 
@@ -238,7 +255,9 @@ namespace XUnitTestRW.TEST
         public async void Should_DeleteAction_Returns_Product_If_IdExist(int productId)
         {
             _mockRepo.Setup(x => x.GetEntity(productId)).Returns(Task.FromResult(products.FirstOrDefault(x => x.Id == productId)));
+
             var result = await controller.Delete(4);
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.IsType<Product>(viewResult.Model);
 
@@ -252,7 +271,9 @@ namespace XUnitTestRW.TEST
         {
             _mockRepo.Setup(x => x.GetEntity(productId)).Returns(Task.FromResult(products.FirstOrDefault(x => x.Id == productId)));
             _mockRepo.Setup(x => x.Delete(products.FirstOrDefault(x => x.Id == productId)));
+            
             var result = await controller.DeleteConfirmed(productId);
+            
             Assert.IsType<RedirectToActionResult>(result);
         }
         #endregion
